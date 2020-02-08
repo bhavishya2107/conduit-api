@@ -43,6 +43,12 @@ var userSchema = new Schema({
   favorited: {
     type: [Schema.Types.ObjectId],
     ref: "Article"
+  },
+  followers: {
+    type: [String]
+  },
+  following: {
+    type: [String]
   }
 }, { timestamps: true })
 

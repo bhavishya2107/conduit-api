@@ -31,6 +31,18 @@ var userSchema = new Schema({
   following: {
     type: [Schema.Types.ObjectId],
     ref: "User"
+  },
+  comments: {
+    type: [Schema.Types.ObjectId],
+    ref: "Comment"
+  },
+  articles: {
+    type: [Schema.Types.ObjectId],
+    ref: "Article"
+  },
+  favorited: {
+    type: [Schema.Types.ObjectId],
+    ref: "Article"
   }
 }, { timestamps: true })
 

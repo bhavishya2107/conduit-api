@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/user');
 var auth = require('../../modules/auth');
-var jwt = require('jsonwebtoken');
-var gravatar = require('gravatar');
 var loggedUser = auth.verifyToken;
 
 router.use(loggedUser);

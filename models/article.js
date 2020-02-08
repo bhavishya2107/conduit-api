@@ -16,12 +16,11 @@ var articleSchema = new Schema({
   },
   body: {
     type: String,
-    required:true
+    required: true
   },
   image: {
     type: String
   },
-  tagList: [String],
   favorited: Boolean,
   favoritesCount: {
     type: Number,
@@ -34,6 +33,10 @@ var articleSchema = new Schema({
   comments: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment'
+  }],
+  favorites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   }]
 }, { timestamps: true })
 

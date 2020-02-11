@@ -3,7 +3,7 @@ var router = express.Router();
 var User = require('../../models/user');
 var auth = require('../../modules/auth');
 var jwt = require('jsonwebtoken');
-var loggedUser = auth.verifyToken;
+// var loggedUser = auth.verifyToken;
 var updatePW = auth.updatePW;
 
 
@@ -29,7 +29,7 @@ router.post('/users/login', async (req, res) => {
     var payload = { UserId: user.id, email: user.email }
     var token = await jwt.sign(payload, process.env.SECRET)
     user.token = token
-    res.json({ success: "true", user })
+    res.json({ success: "true" , token})
   } catch (error) {
     res.status(400).json(error);
   }
@@ -37,11 +37,12 @@ router.post('/users/login', async (req, res) => {
 
 
 // ------------------------------------only for logged user------------------------------------------------
-router.use(loggedUser)
+// router.use(loggedUser)
 
 //get single user
-router.get('/user', async (req, res) => {
+router.get('/user', auth.verifyToken,async (req, res) => {
   var { username } = req.body.user
+  console.log(username)
   try {
     var user = await User.findOne({ username })
     if (user) return res.json({ success: "true", user })
@@ -51,7 +52,7 @@ router.get('/user', async (req, res) => {
 })
 
 //update user
-router.put('/user', async (req, res) => {
+router.put('/user',auth.verifyToken, async (req, res) => {
   let id = req.user.UserId;
   console.log(req.user)
   try {

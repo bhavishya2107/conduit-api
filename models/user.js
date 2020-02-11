@@ -19,37 +19,28 @@ var userSchema = new Schema({
     type: String,
     required: true
   },
-  token: {
-    type: String
-  },
   bio: {
     type: String
   },
   image: {
     type: String
   },
-  following: {
-    type: [Schema.Types.ObjectId],
+  following: [{
+    type: Schema.Types.ObjectId,
     ref: "User"
-  },
-  comments: {
-    type: [Schema.Types.ObjectId],
-    ref: "Comment"
-  },
-  articles: {
-    type: [Schema.Types.ObjectId],
+  }],
+  articles: [{
+    type: Schema.Types.ObjectId,
     ref: "Article"
-  },
-  favorited: {
-    type: [Schema.Types.ObjectId],
+  }],
+  favorited: [{
+    type: Schema.Types.ObjectId,
     ref: "Article"
-  },
-  followers: {
-    type: [String]
-  },
-  following: {
-    type: [String]
-  }
+  }],
+  followers: [{
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  }]
 }, { timestamps: true })
 
 

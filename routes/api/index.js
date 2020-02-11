@@ -7,17 +7,18 @@ var articleRouter = require('./articles');
 var profilesRouter = require('./profiles');
 
 
-router.get('/tags', (req, res) => {
-  Article.find({})
-  .populate({path:'tagList'})
-  .exec((err, tags) => {
-    if(err) return res.json(err)
-    res.json({tags})
-  })
+router.get('/tags', async (req, res) => {
+  try {
+    var articles = await Article.find({})
+    articles.forEach((article) => {
+      res.json({success:true,tags:article.tagList})
+    })
+  } catch (error) {
+    res.json(error)
+  }
 })
 
 router.use('/', userRouter);
-
 router.use('/articles', articleRouter);
 router.use('/profiles', profilesRouter);
 

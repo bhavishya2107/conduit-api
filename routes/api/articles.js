@@ -4,8 +4,22 @@ var Article = require('../../models/article');
 var Comment = require('../../models/comment');
 var User = require('../../models/user');
 var auth = require('../../modules/auth');
-var loggedUser = auth.verifyToken;
+// var loggedUser = auth.verifyToken;
 var updateSlug = auth.upateSlug;
+
+
+//feed articles
+router.get('/feed', auth.verifyToken, async (req, res) => {
+  try {
+    var user = await User.findById(req.user.UserId)
+      .populate({
+        path: 'following', populate: { path: 'articles' }
+      })
+    res.json({ success: true, feeds:user.following })
+  } catch (error) {
+    res.json({ error, msg: "errro" })
+  }
+})
 
 
 //get single article
@@ -13,23 +27,23 @@ router.get('/:slug', async (req, res) => {
   var query = req.params.slug
   try {
     var singleArticle = await Article.findOne({ slug: query })
-    .populate('author','-following')
-    console.log(singleArticle)
+      .populate('author', '-following')
+    if (!singleArticle) return res.json({ success: false, msg: "Invalid Slug" })
     res.json(singleArticle)
   } catch (error) {
     res.status(400).json(error, { msg: "Article not found or slug is not appropriate" })
   }
-
 })
 
 //==================only for logged user===================
-router.use(loggedUser)
+// router.use(loggedUser)
 
 
 //list all articles
 router.get('/', async (req, res) => {
   try {
     var articles = await Article.find({})
+    .populate('author')
     res.json({ success: true, articles })
   } catch (error) {
     res.json({ error, msg: "No articles found" })
@@ -38,19 +52,19 @@ router.get('/', async (req, res) => {
 })
 
 //create Article
-router.post('/', async (req, res) => {
+router.post('/', auth.verifyToken, async (req, res) => {
   try {
     var article = await Article.create(req.body.article)
     var articleWithUser = await Article.findOneAndUpdate(article.id, { author: req.user.UserId })
+    var articleUpdate = await User.findByIdAndUpdate(req.user.UserId, {$push:{articles:article.id}})
     res.json({ success: "true", articleWithUser })
   } catch (error) {
     res.status(400).json(error)
   }
 })
 
-
 //update Article
-router.put('/:slug', async (req, res) => {
+router.put('/:slug', auth.verifyToken, async (req, res) => {
   var slug = req.params.slug
   try {
     var updatedArticle = await Article.findOneAndUpdate({ slug }, req.body.article, { new: true })
@@ -63,7 +77,7 @@ router.put('/:slug', async (req, res) => {
 })
 
 //delete Article
-router.delete('/:slug', async (req, res) => {
+router.delete('/:slug', auth.verifyToken, async (req, res) => {
   var slug = req.params.slug
   try {
     await Article.findOneAndDelete({ slug })
@@ -76,7 +90,7 @@ router.delete('/:slug', async (req, res) => {
 
 // =======================COMMENTS========================================
 //create comments
-router.post('/:slug/comments', async (req, res) => {
+router.post('/:slug/comments', auth.verifyToken, async (req, res) => {
   console.log(req.user)
   try {
     var comment = await Comment.create(req.body.comment)
@@ -89,7 +103,7 @@ router.post('/:slug/comments', async (req, res) => {
 })
 
 //delete comment
-router.delete('/:slug/comments/:id', async (req, res) => {
+router.delete('/:slug/comments/:id', auth.verifyToken, async (req, res) => {
   var slug = req.params.slug
   try {
     await Comment.findByIdAndDelete(req.params.id)
@@ -101,7 +115,7 @@ router.delete('/:slug/comments/:id', async (req, res) => {
 })
 
 //get all comments in an article
-router.get('/:slug/comments', (req, res) => {
+router.get('/:slug/comments', auth.verifyToken, (req, res) => {
   console.log(req.user)
   var slug = req.params.slug
   Article.findOne({ slug })
@@ -113,7 +127,7 @@ router.get('/:slug/comments', (req, res) => {
 })
 
 //like an article
-router.post('/:slug/favorite', async (req, res) => {
+router.post('/:slug/favorite', auth.verifyToken, async (req, res) => {
   var slug = req.params.slug
   var user = req.user.UserId
   try {
@@ -133,7 +147,7 @@ router.post('/:slug/favorite', async (req, res) => {
 })
 
 //dislike an article
-router.delete('/:slug/favorite', async (req, res) => {
+router.delete('/:slug/favorite', auth.verifyToken, async (req, res) => {
   var slug = req.params.slug
   var user = req.user.UserId
   try {
@@ -149,7 +163,5 @@ router.delete('/:slug/favorite', async (req, res) => {
     res.json({ error, msg: "Could not dislike the article" })
   }
 })
-
-
 
 module.exports = router;

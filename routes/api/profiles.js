@@ -28,11 +28,11 @@ router.post('/:username/follow', async (req, res) => {
     var user = await User.findOne({ username })
     console.log(user)
     if (!user.following.includes(loginUser)) {
-      var follow = await User.findOneAndUpdate({ username }, { $push: { following: req.user.UserId } })
-      await User.findByIdAndUpdate(req.user.UserId, { $push: { followers: follow.id } })
+      var follow = await User.findOneAndUpdate({ username }, { $push: { followers: req.user.UserId } }, { new: true })
+      await User.findByIdAndUpdate(req.user.UserId, { $push: { following: follow.id } })
       res.json({ success: true, follow })
     } else {
-      res.json({ msg: `you have already followed the ${username}`,follow })
+      res.json({ msg: `you have already followed the ${username}`, follow })
     }
   } catch (error) {
     res.json({ msg: "Issue in following" })
@@ -48,8 +48,8 @@ router.delete('/:username/follow', async (req, res) => {
     var user = await User.findOne({ username })
     console.log(user)
     if (user.following.includes(loginUser)) {
-      var follow = await User.findOneAndUpdate({ username }, { $pull: { following: req.user.UserId } })
-      await User.findByIdAndUpdate(req.user.UserId, { $pull: { followers: follow.id } })
+      var follow = await User.findOneAndUpdate({ username }, { $pull: { followers: req.user.UserId } }, { new: true })
+      await User.findByIdAndUpdate(req.user.UserId, { $pull: { following: follow.id } })
       res.json({ success: true, msg: `successfully unfollowed ${username}` })
     } else {
       res.json({ msg: `you have already unfollowed the ${username}` })

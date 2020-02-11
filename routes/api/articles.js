@@ -13,6 +13,7 @@ router.get('/:slug', async (req, res) => {
   var query = req.params.slug
   try {
     var singleArticle = await Article.findOne({ slug: query })
+    .populate('author','-following')
     console.log(singleArticle)
     res.json(singleArticle)
   } catch (error) {

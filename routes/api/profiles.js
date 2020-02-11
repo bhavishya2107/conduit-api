@@ -30,9 +30,9 @@ router.post('/:username/follow', async (req, res) => {
     if (!user.following.includes(loginUser)) {
       var follow = await User.findOneAndUpdate({ username }, { $push: { following: req.user.UserId } })
       await User.findByIdAndUpdate(req.user.UserId, { $push: { followers: follow.id } })
-      res.json({ success: true, msg: "successfully followed" })
+      res.json({ success: true, follow })
     } else {
-      res.json({ msg: `you have already followed the ${username}` })
+      res.json({ msg: `you have already followed the ${username}`,follow })
     }
   } catch (error) {
     res.json({ msg: "Issue in following" })

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const slug = require('slug')
+const slug = require('slug');
+const bcrypt = require('bcryptjs');
 
 module.exports = {
   generateJWT: async (user) => {
@@ -25,5 +26,9 @@ module.exports = {
   upateSlug: (article) => {
     var slugged = slug(article.title, '-')
     article.slug = slugged + '-' + article._id
+  },
+  updatePW: (user) => {
+    var hash = bcrypt.hashSync(user.password, 10)
+    user.password = hash
   }
 }

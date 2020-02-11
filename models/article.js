@@ -18,6 +18,9 @@ var articleSchema = new Schema({
     type: String,
     required: true
   },
+  tagList:{
+    type:[String]
+  },
   image: {
     type: String
   },

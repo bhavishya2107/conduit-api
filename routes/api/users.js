@@ -4,6 +4,7 @@ var User = require('../../models/user');
 var auth = require('../../modules/auth');
 var jwt = require('jsonwebtoken');
 var loggedUser = auth.verifyToken;
+var updatePW = auth.updatePW;
 
 
 //register user
@@ -51,10 +52,13 @@ router.get('/user', async (req, res) => {
 
 //update user
 router.put('/user', async (req, res) => {
-  let { id } = req.body.user;
-  console.log(req.body.user)
+  let id = req.user.UserId;
+  console.log(req.user)
   try {
     var updatedUser = await User.findByIdAndUpdate(id, req.body.user, { new: true })
+    console.log(updatedUser)
+    var updatePassword = await updatePW(updatedUser)
+    console.log(updatePassword)
     res.json({ success: "true", updatedUser })
   } catch (error) {
     res.status(400).json(error)
